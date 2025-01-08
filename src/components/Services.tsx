@@ -1,4 +1,4 @@
-import { Music, Mic2, Wave } from "lucide-react";
+import { Music, Mic2, Waves } from "lucide-react";
 
 const services = [
   {
@@ -12,7 +12,7 @@ const services = [
     description: "High-quality recording services in our professionally treated studio space."
   },
   {
-    icon: Wave,
+    icon: Waves,
     title: "Mixing & Mastering",
     description: "Expert mixing and mastering to give your music the professional polish it deserves."
   }
