@@ -12,7 +12,7 @@ const Hero = () => {
       
       <div className="relative z-10 text-center px-4 animate-fade-in">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-          <span className="bg-gradient-to-r from-studio-purple to-studio-pink bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-studio-copper to-studio-gold bg-clip-text text-transparent">
             Refugio Music
           </span>
         </h1>

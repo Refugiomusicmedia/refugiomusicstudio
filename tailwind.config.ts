@@ -25,8 +25,8 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         studio: {
-          purple: "#7E69AB",
-          pink: "#FF69B4",
+          copper: "#CD7F32",
+          bronze: "#B87333",
           gold: "#FFD700",
           dark: "#1A1F2C",
         },

@@ -23,7 +23,7 @@ const Services = () => {
     <section id="services" className="py-20 bg-studio-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          <span className="bg-gradient-to-r from-studio-purple to-studio-pink bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-studio-copper to-studio-gold bg-clip-text text-transparent">
             Our Services
           </span>
         </h2>
@@ -34,7 +34,7 @@ const Services = () => {
               key={service.title}
               className="bg-white/5 backdrop-blur-sm rounded-lg p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105"
             >
-              <service.icon className="w-12 h-12 text-studio-pink mb-4" />
+              <service.icon className="w-12 h-12 text-studio-gold mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
               <p className="text-gray-400">{service.description}</p>
             </div>
