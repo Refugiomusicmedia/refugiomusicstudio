@@ -1,9 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,12 +14,20 @@ interface EmailRequest {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { name, email, projectDetails } = await req.json() as EmailRequest
+
+    console.log('Received request:', { name, email, projectDetails })
+
+    if (!RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not set')
+      throw new Error('RESEND_API_KEY is not configured')
+    }
 
     // Format the email HTML
     const htmlContent = `
@@ -31,6 +36,8 @@ serve(async (req) => {
       <p><strong>Project Details:</strong></p>
       <p>${projectDetails}</p>
     `
+
+    console.log('Sending email with content:', htmlContent)
 
     // Send email using Resend
     const res = await fetch('https://api.resend.com/emails', {
@@ -48,8 +55,13 @@ serve(async (req) => {
     })
 
     if (!res.ok) {
+      const error = await res.text()
+      console.error('Resend API error:', error)
       throw new Error('Failed to send email')
     }
+
+    const data = await res.json()
+    console.log('Email sent successfully:', data)
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
