@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -25,7 +25,25 @@
     --ring: 262 60% 54%;
     --radius: 0.5rem;
   }
- 
+
+  @font-face {
+    font-family: 'Gardafiller';
+    src: url('/fonts/Sebastian Cabaj - Gardaempty.otf') format('opentype');
+  }
+
+  @font-face {
+    font-family: 'Gardaempty';
+    src: url('/fonts/Sebastian Cabaj - Gardafiller.ttf') format('truetype');
+  }
+
+  h1 {
+    font-family: 'Gardafiller', sans-serif;
+  }
+
+  h3 {
+    font-family: 'Gardaempty', sans-serif;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -60,4 +78,14 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #000000; 
+  color: #ffffff; 
+  position: relative;
+  bottom: 0;
+  width: 100%;
 }

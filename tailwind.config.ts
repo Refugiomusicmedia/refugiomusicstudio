@@ -28,7 +28,7 @@ export default {
           copper: "#CD7F32",
           bronze: "#B87333",
           gold: "#FFD700",
-          dark: "#1A1F2C",
+          dark: "#000000",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

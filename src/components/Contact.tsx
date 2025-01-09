@@ -23,7 +23,7 @@ const Contact = () => {
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
               <Phone className="w-6 h-6 text-studio-pink" />
-              <p className="text-gray-300">(619) 800-4230</p>
+              <p className="text-gray-300">+1 (619) 800-4230</p>
             </div>
             <div className="flex items-center space-x-4">
               <MapPin className="w-6 h-6 text-studio-pink" />
@@ -31,7 +31,7 @@ const Contact = () => {
             </div>
             <div className="flex items-center space-x-4">
               <Mail className="w-6 h-6 text-studio-pink" />
-              <p className="text-gray-300">contact@refugiomusic.com</p>
+              <p className="text-gray-300">refugiomusicstudio@gmail.com</p>
             </div>
           </div>
 
@@ -55,7 +55,7 @@ const Contact = () => {
             />
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-studio-purple to-studio-pink hover:opacity-90 transition-opacity"
+              className="w-full bg-gradient-to-r from-studio-gold to-studio-pink hover:opacity-90 transition-opacity"
             >
               Send Message
             </Button>

@@ -1,15 +1,15 @@
 const Listen = () => {
   const videos = [
     {
-      id: "VIDEO_ID_1", // Replace with actual YouTube video IDs
+      id: "RHyadcYpB3k", // Replace with actual YouTube video IDs
       title: "Studio Session 1",
     },
     {
-      id: "VIDEO_ID_2",
+      id: "yb66jVzFVpY",
       title: "Studio Session 2",
     },
     {
-      id: "VIDEO_ID_3",
+      id: "7x3cTeT3NA8",
       title: "Studio Session 3",
     },
   ];
@@ -17,11 +17,11 @@ const Listen = () => {
   return (
     <section id="listen" className="py-20 bg-studio-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+        <h1 className="text-3xl md:text-4xl  text-center mb-12">
           <span className="bg-gradient-to-r from-studio-copper to-studio-gold bg-clip-text text-transparent">
             Listen
           </span>
-        </h2>
+        </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {videos.map((video) => (

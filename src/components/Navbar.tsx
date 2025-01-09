@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navItems = ["Studio", "Services", "Listen", "Contact"];
+  const navItems = ["Services", "Listen", "Contact"];
 
   return (
     <nav className="fixed w-full bg-studio-dark/90 backdrop-blur-sm z-50">
@@ -13,9 +13,9 @@ const Navbar = () => {
           <div className="flex-shrink-0 group">
             <a href="#" className="text-white font-bold text-xl flex items-center gap-2">
               <img
-                src="/lovable-uploads/b965ea4b-a626-4e32-8deb-bb1374004fd6.png"
+                src="/lovable-uploads/ClippedLogo.png"
                 alt="Refugio Music"
-                className="h-10 w-auto group-hover:animate-float"
+                className="h-10 w-auto"
               />
               <span className="bg-gradient-to-r from-studio-purple to-studio-pink bg-clip-text text-transparent">
                 Refugio Music
