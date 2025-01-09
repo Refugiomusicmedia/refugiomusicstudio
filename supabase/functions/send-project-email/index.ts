@@ -30,14 +30,20 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log("Received project email request:", { name, email });
 
-    const htmlContent = `
-      <h2>New Project Inquiry from ${name}</h2>
-      <p><strong>From:</strong> ${email}</p>
-      <p><strong>Project Details:</strong></p>
-      <p>${projectDetails}</p>
-    `;
+    // Using onboarding@resend.dev as the sender (this is allowed for testing)
+    const emailData = {
+      from: "onboarding@resend.dev",
+      to: ["refugiomusicstudio@gmail.com"],
+      subject: `New Project Inquiry from ${name}`,
+      html: `
+        <h2>New Project Inquiry from ${name}</h2>
+        <p><strong>From:</strong> ${email}</p>
+        <p><strong>Project Details:</strong></p>
+        <p>${projectDetails}</p>
+      `,
+    };
 
-    console.log("Sending email with content:", htmlContent);
+    console.log("Sending email with data:", emailData);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -45,31 +51,28 @@ const handler = async (req: Request): Promise<Response> => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "Refugio Music Studio <onboarding@resend.dev>",
-        to: ["refugiomusicstudio@gmail.com"],
-        subject: `New Project Inquiry from ${name}`,
-        html: htmlContent,
-      }),
+      body: JSON.stringify(emailData),
     });
 
+    const responseData = await res.json();
+    console.log("Resend API response:", responseData);
+
     if (!res.ok) {
-      const error = await res.text();
-      console.error("Resend API error:", error);
-      throw new Error("Failed to send email");
+      console.error("Resend API error:", responseData);
+      throw new Error(responseData.message || "Failed to send email");
     }
 
-    const data = await res.json();
-    console.log("Email sent successfully:", data);
-
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, data: responseData }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error: any) {
     console.error("Error in send-project-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "Internal server error" }),
+      JSON.stringify({ 
+        error: error.message || "Internal server error",
+        details: error.toString()
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
