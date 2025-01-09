@@ -26,6 +26,12 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
+    // Validate API key format (basic check)
+    if (!RESEND_API_KEY.startsWith('re_')) {
+      console.error("Invalid Resend API key format");
+      throw new Error("Invalid Resend API key format - should start with 're_'");
+    }
+
     const { name, email, projectDetails }: ProjectEmailRequest = await req.json();
     
     console.log("Received project email request:", { name, email });
