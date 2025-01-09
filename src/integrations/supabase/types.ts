@@ -12,15 +12,24 @@ export type Database = {
       "Project Feedback": {
         Row: {
           created_at: string
+          email: string
           id: number
+          name: string
+          project_details: string
         }
         Insert: {
           created_at?: string
+          email: string
           id?: number
+          name: string
+          project_details: string
         }
         Update: {
           created_at?: string
+          email?: string
           id?: number
+          name?: string
+          project_details?: string
         }
         Relationships: []
       }
