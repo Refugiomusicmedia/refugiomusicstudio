@@ -28,6 +28,12 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
+    // Validate API key format
+    if (!RESEND_API_KEY.startsWith('re_')) {
+      console.error("Invalid Resend API key format - should start with 're_'");
+      throw new Error("Invalid Resend API key format");
+    }
+
     const { name, email, projectDetails }: ProjectEmailRequest = await req.json();
     
     console.log("Received project email request:", { name, email });
@@ -44,7 +50,11 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     };
 
-    console.log("Sending email with data:", emailData);
+    console.log("Attempting to send email with data:", {
+      ...emailData,
+      apiKeyLength: RESEND_API_KEY.length,
+      apiKeyPrefix: RESEND_API_KEY.substring(0, 3)
+    });
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -63,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           error: responseData.message || "Failed to send email",
-          details: `Error: ${responseData.message || "Unknown error"}`
+          details: `Error: ${responseData.message || "Unknown error"}. Status: ${res.status}`
         }),
         {
           status: res.status,
