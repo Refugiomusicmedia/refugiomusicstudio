@@ -21,24 +21,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Starting email sending process...");
+
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY is not configured");
       throw new Error("RESEND_API_KEY is not configured");
-    }
-
-    // Validate API key format (basic check)
-    if (!RESEND_API_KEY.startsWith('re_')) {
-      console.error("Invalid Resend API key format");
-      throw new Error("Invalid Resend API key format - should start with 're_'");
     }
 
     const { name, email, projectDetails }: ProjectEmailRequest = await req.json();
     
     console.log("Received project email request:", { name, email });
 
-    // Using onboarding@resend.dev as the sender (this is allowed for testing)
     const emailData = {
-      from: "onboarding@resend.dev",
+      from: "onboarding@resend.dev", // Using Resend's test sender
       to: ["refugiomusicstudio@gmail.com"],
       subject: `New Project Inquiry from ${name}`,
       html: `
@@ -65,7 +60,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!res.ok) {
       console.error("Resend API error:", responseData);
-      throw new Error(responseData.message || "Failed to send email");
+      return new Response(
+        JSON.stringify({ 
+          error: responseData.message || "Failed to send email",
+          details: `Error: ${responseData.message || "Unknown error"}`
+        }),
+        {
+          status: res.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
     return new Response(JSON.stringify({ success: true, data: responseData }), {
@@ -76,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("Error in send-project-email function:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "Internal server error",
+        error: error.message || "Failed to send email",
         details: error.toString()
       }),
       {
