@@ -1,10 +1,37 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+
+import { useState, useEffect } from "react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   const navItems = ["Services", "Listen", "Contact"];
+
+  useEffect(() => {
+    // Check current auth status
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user || null);
+    });
+
+    // Set up auth listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="fixed w-full bg-studio-dark/90 backdrop-blur-sm z-50">
@@ -34,6 +61,24 @@ const Navbar = () => {
                   {item}
                 </a>
               ))}
+              
+              {user ? (
+                <Button
+                  onClick={handleSignOut}
+                  className="flex items-center bg-transparent border border-studio-pink hover:bg-studio-pink/20 text-white"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/auth")}
+                  className="flex items-center bg-transparent border border-studio-purple hover:bg-studio-purple/20 text-white"
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
           
@@ -62,6 +107,27 @@ const Navbar = () => {
                 {item}
               </a>
             ))}
+            
+            {user ? (
+              <button
+                onClick={handleSignOut}
+                className="flex items-center w-full text-left text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  navigate("/auth");
+                  setIsOpen(false);
+                }}
+                className="flex items-center w-full text-left text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       )}
