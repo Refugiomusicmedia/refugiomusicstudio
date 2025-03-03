@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,16 +51,24 @@ const Contact = () => {
       });
 
       // Send email
-      const { error: emailError } = await supabase.functions.invoke(
+      const response = await supabase.functions.invoke(
         "send-project-email",
         {
           body: formData,
         }
       );
-
-      if (emailError) {
-        console.error("Email Error:", emailError);
-        throw emailError;
+      
+      // Check for function errors
+      if (response.error) {
+        console.error("Email Function Error:", response.error);
+        throw new Error(response.error.message || "Error sending email");
+      }
+      
+      // Check response data for API errors
+      const data = response.data;
+      if (data && data.error) {
+        console.error("Email API Error:", data.error);
+        throw new Error(data.error);
       }
 
       toast({

@@ -26,18 +26,23 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!RESEND_API_KEY) {
       console.error("RESEND_API_KEY is not configured");
-      throw new Error("RESEND_API_KEY is not configured");
+      throw new Error("RESEND_API_KEY is not configured in environment variables");
     }
 
-    // Validate API key format
+    // Validate API key format (basic check)
     if (!RESEND_API_KEY.startsWith('re_')) {
       console.error("Invalid Resend API key format - should start with 're_'");
       throw new Error("Invalid Resend API key format");
     }
 
-    const { name, email, projectDetails }: ProjectEmailRequest = await req.json();
+    const requestData = await req.json();
+    const { name, email, projectDetails }: ProjectEmailRequest = requestData;
     
     console.log("Received project email request:", { name, email });
+
+    if (!name || !email || !projectDetails) {
+      throw new Error("Missing required fields: name, email, or projectDetails");
+    }
 
     // Create an email to the client
     const clientEmailData = {
@@ -72,7 +77,8 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     console.log("Attempting to send notification email to studio");
-
+    
+    // First send the email to the studio
     const studioRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -85,23 +91,7 @@ const handler = async (req: Request): Promise<Response> => {
     const studioResponseData = await studioRes.json();
     console.log("Studio email response:", studioResponseData);
 
-    // Only attempt to send client email if studio email succeeded
-    if (studioRes.ok) {
-      console.log("Attempting to send confirmation email to client");
-      
-      const clientRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify(clientEmailData),
-      });
-      
-      const clientResponseData = await clientRes.json();
-      console.log("Client email response:", clientResponseData);
-    }
-
+    // Check if studio email sent successfully
     if (!studioRes.ok) {
       console.error("Resend API error:", studioResponseData);
       return new Response(
@@ -116,10 +106,37 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
+    // If studio email sent successfully, now send the confirmation to the client
+    console.log("Attempting to send confirmation email to client");
+    
+    const clientRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify(clientEmailData),
     });
+    
+    const clientResponseData = await clientRes.json();
+    console.log("Client email response:", clientResponseData);
+
+    // Even if the client email fails, we still return success since we notified the studio
+    if (!clientRes.ok) {
+      console.warn("Client email failed but studio was notified:", clientResponseData);
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        studioEmailId: studioResponseData.id,
+        clientEmailId: clientRes.ok ? clientResponseData.id : null
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      }
+    );
   } catch (error: any) {
     console.error("Error in send-project-email function:", error);
     return new Response(
