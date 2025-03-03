@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -38,7 +40,16 @@ const Contact = () => {
           },
         ]);
 
-      if (supabaseError) throw supabaseError;
+      if (supabaseError) {
+        console.error("Supabase Error:", supabaseError);
+        throw new Error(supabaseError.message);
+      }
+
+      toast({
+        title: "Project details saved!",
+        description: "Now sending email notification...",
+        duration: 3000,
+      });
 
       // Send email
       const { error: emailError } = await supabase.functions.invoke(
@@ -48,7 +59,10 @@ const Contact = () => {
         }
       );
 
-      if (emailError) throw emailError;
+      if (emailError) {
+        console.error("Email Error:", emailError);
+        throw emailError;
+      }
 
       toast({
         title: "Success!",
@@ -62,11 +76,12 @@ const Contact = () => {
         email: "",
         projectDetails: "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
+      
       toast({
         title: "Error",
-        description: "There was an error sending your message. Please try again.",
+        description: error.message || "There was an error sending your message. Please try again.",
         variant: "destructive",
         duration: 5000,
       });
@@ -100,35 +115,60 @@ const Contact = () => {
               <Mail className="w-6 h-6 text-studio-pink" />
               <p className="text-gray-300">refugiomusicstudio@gmail.com</p>
             </div>
+            
+            <div className="mt-8 p-6 bg-white/5 rounded-lg border border-white/10">
+              <h3 className="text-xl font-semibold text-studio-gold mb-4">How It Works</h3>
+              <ol className="list-decimal list-inside space-y-2 text-gray-300">
+                <li>Fill out the form with your project details</li>
+                <li>Your information is securely stored in our database</li>
+                <li>You'll receive a confirmation email</li>
+                <li>Our team will review your project and contact you soon</li>
+              </ol>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={formData.name}
-              onChange={handleChange}
-              className="bg-white/5 border-white/10 text-white"
-              required
-            />
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className="bg-white/5 border-white/10 text-white"
-              required
-            />
-            <Textarea
-              name="projectDetails"
-              placeholder="Tell us about your project"
-              value={formData.projectDetails}
-              onChange={handleChange}
-              className="bg-white/5 border-white/10 text-white min-h-[150px]"
-              required
-            />
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-white">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Your name"
+                value={formData.name}
+                onChange={handleChange}
+                className="bg-white/5 border-white/10 text-white"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Your email"
+                value={formData.email}
+                onChange={handleChange}
+                className="bg-white/5 border-white/10 text-white"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="projectDetails" className="text-white">Project Details</Label>
+              <Textarea
+                id="projectDetails"
+                name="projectDetails"
+                placeholder="Tell us about your project"
+                value={formData.projectDetails}
+                onChange={handleChange}
+                className="bg-white/5 border-white/10 text-white min-h-[150px]"
+                required
+              />
+            </div>
+            
             <Button
               type="submit"
               disabled={isSubmitting}
@@ -136,6 +176,11 @@ const Contact = () => {
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </Button>
+            
+            <p className="text-xs text-gray-400 text-center mt-4">
+              By submitting this form, your details will be stored in our database 
+              and you'll receive a confirmation email.
+            </p>
           </form>
         </div>
       </div>

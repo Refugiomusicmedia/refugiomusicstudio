@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -38,51 +39,84 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log("Received project email request:", { name, email });
 
-    const emailData = {
-      from: "onboarding@resend.dev", // Using Resend's test sender
+    // Create an email to the client
+    const clientEmailData = {
+      from: "Refugio Music Studio <onboarding@resend.dev>", // Using Resend's test sender
+      to: [email],
+      subject: "Thank you for your inquiry!",
+      html: `
+        <h2>Thank you for reaching out, ${name}!</h2>
+        <p>We've received your project inquiry and will get back to you shortly.</p>
+        <p>Here's a summary of what you shared with us:</p>
+        <blockquote style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #333;">
+          ${projectDetails}
+        </blockquote>
+        <p>We look forward to working with you on your project!</p>
+        <p>Best regards,<br>Refugio Music Studio Team</p>
+      `,
+    };
+
+    // Create an email to the studio
+    const studioEmailData = {
+      from: "Contact Form <onboarding@resend.dev>", // Using Resend's test sender
       to: ["refugiomusicstudio@gmail.com"],
       subject: `New Project Inquiry from ${name}`,
       html: `
         <h2>New Project Inquiry from ${name}</h2>
-        <p><strong>From:</strong> ${email}</p>
+        <p><strong>From:</strong> ${name} (${email})</p>
         <p><strong>Project Details:</strong></p>
-        <p>${projectDetails}</p>
+        <blockquote style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #333;">
+          ${projectDetails}
+        </blockquote>
       `,
     };
 
-    console.log("Attempting to send email with data:", {
-      ...emailData,
-      apiKeyLength: RESEND_API_KEY.length,
-      apiKeyPrefix: RESEND_API_KEY.substring(0, 3)
-    });
+    console.log("Attempting to send notification email to studio");
 
-    const res = await fetch("https://api.resend.com/emails", {
+    const studioRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(emailData),
+      body: JSON.stringify(studioEmailData),
     });
 
-    const responseData = await res.json();
-    console.log("Resend API response:", responseData);
+    const studioResponseData = await studioRes.json();
+    console.log("Studio email response:", studioResponseData);
 
-    if (!res.ok) {
-      console.error("Resend API error:", responseData);
+    // Only attempt to send client email if studio email succeeded
+    if (studioRes.ok) {
+      console.log("Attempting to send confirmation email to client");
+      
+      const clientRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify(clientEmailData),
+      });
+      
+      const clientResponseData = await clientRes.json();
+      console.log("Client email response:", clientResponseData);
+    }
+
+    if (!studioRes.ok) {
+      console.error("Resend API error:", studioResponseData);
       return new Response(
         JSON.stringify({ 
-          error: responseData.message || "Failed to send email",
-          details: `Error: ${responseData.message || "Unknown error"}. Status: ${res.status}`
+          error: studioResponseData.message || "Failed to send email",
+          details: `Error: ${studioResponseData.message || "Unknown error"}. Status: ${studioRes.status}`
         }),
         {
-          status: res.status,
+          status: studioRes.status,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
 
-    return new Response(JSON.stringify({ success: true, data: responseData }), {
+    return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
