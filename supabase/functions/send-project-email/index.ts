@@ -44,24 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Missing required fields: name, email, or projectDetails");
     }
 
-    // Create an email to the client
-    const clientEmailData = {
-      from: "Refugio Music Studio <onboarding@resend.dev>", // Using Resend's test sender
-      to: [email],
-      subject: "Thank you for your inquiry!",
-      html: `
-        <h2>Thank you for reaching out, ${name}!</h2>
-        <p>We've received your project inquiry and will get back to you shortly.</p>
-        <p>Here's a summary of what you shared with us:</p>
-        <blockquote style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #333;">
-          ${projectDetails}
-        </blockquote>
-        <p>We look forward to working with you on your project!</p>
-        <p>Best regards,<br>Refugio Music Studio Team</p>
-      `,
-    };
-
-    // Create an email to the studio
+    // Create an email to the studio only
     const studioEmailData = {
       from: "Contact Form <onboarding@resend.dev>", // Using Resend's test sender
       to: ["refugiomusicstudio@gmail.com"],
@@ -78,7 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Attempting to send notification email to studio");
     
-    // First send the email to the studio
+    // Send the email to the studio
     const studioRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -106,31 +89,10 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // If studio email sent successfully, now send the confirmation to the client
-    console.log("Attempting to send confirmation email to client");
-    
-    const clientRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify(clientEmailData),
-    });
-    
-    const clientResponseData = await clientRes.json();
-    console.log("Client email response:", clientResponseData);
-
-    // Even if the client email fails, we still return success since we notified the studio
-    if (!clientRes.ok) {
-      console.warn("Client email failed but studio was notified:", clientResponseData);
-    }
-
     return new Response(
       JSON.stringify({ 
         success: true, 
-        studioEmailId: studioResponseData.id,
-        clientEmailId: clientRes.ok ? clientResponseData.id : null
+        studioEmailId: studioResponseData.id
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

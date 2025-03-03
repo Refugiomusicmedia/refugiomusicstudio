@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,11 +47,11 @@ const Contact = () => {
 
       toast({
         title: "Project details saved!",
-        description: "Now sending email notification...",
+        description: "Now sending notification to Refugio Music Studio...",
         duration: 3000,
       });
 
-      // Send email
+      // Send email notification to the company only
       const response = await supabase.functions.invoke(
         "send-project-email",
         {
@@ -61,7 +62,7 @@ const Contact = () => {
       // Check for function errors
       if (response.error) {
         console.error("Email Function Error:", response.error);
-        throw new Error(response.error.message || "Error sending email");
+        throw new Error(response.error.message || "Error sending notification");
       }
       
       // Check response data for API errors
@@ -73,7 +74,7 @@ const Contact = () => {
 
       toast({
         title: "Success!",
-        description: "Your message has been sent successfully.",
+        description: "Your project details have been submitted successfully.",
         duration: 5000,
       });
 
@@ -128,7 +129,6 @@ const Contact = () => {
               <ol className="list-decimal list-inside space-y-2 text-gray-300">
                 <li>Fill out the form with your project details</li>
                 <li>Your information is securely stored in our database</li>
-                <li>You'll receive a confirmation email</li>
                 <li>Our team will review your project and contact you soon</li>
               </ol>
             </div>
@@ -186,7 +186,7 @@ const Contact = () => {
             
             <p className="text-xs text-gray-400 text-center mt-4">
               By submitting this form, your details will be stored in our database 
-              and you'll receive a confirmation email.
+              and a notification will be sent to our team.
             </p>
           </form>
         </div>
