@@ -179,7 +179,7 @@ const Contact = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-studio-gold to-studio-pink hover:opacity-90 transition-opacity"
+              className="w-full bg-gradient-to-r from-studio-copper to-studio-gold hover:opacity-90 transition-opacity"
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </Button>

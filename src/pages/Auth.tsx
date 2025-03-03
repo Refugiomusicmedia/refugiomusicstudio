@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,40 +71,39 @@ const Auth = () => {
         <div className="max-w-md w-full bg-black/30 backdrop-blur-sm p-8 rounded-lg border border-gray-800">
           <Button 
             variant="ghost" 
-            className="mb-4 text-gray-400 hover:text-white p-0"
-            onClick={() => navigate("/")}
-          >
+            className="mb-4 text-gray-400 hover:text-black p-1"
+            onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to home
           </Button>
           
           <h2 className="text-2xl font-bold mb-6 text-center">
-            <span className="bg-gradient-to-r from-studio-purple to-studio-pink bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-studio-copper to-studio-gold bg-clip-text text-transparent">
               {isLogin ? "Sign In" : "Create Account"}
             </span>
           </h2>
           
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white/80">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-black/30 border-white/10 text-white"
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-white/80">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-black/30 border-white/10 text-white"
                 required
               />
             </div>
@@ -113,8 +111,7 @@ const Auth = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-studio-gold to-studio-pink hover:opacity-90 transition-opacity"
-            >
+              className="w-full bg-gradient-to-r from-studio-copper to-studio-gold hover:opacity-90 transition-opacity">
               {loading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
             </Button>
           </form>
@@ -123,8 +120,7 @@ const Auth = () => {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-gray-400 hover:text-white underline"
-            >
+              className="text-sm text-gray-400 hover:text-white underline">
               {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
             </button>
           </div>
