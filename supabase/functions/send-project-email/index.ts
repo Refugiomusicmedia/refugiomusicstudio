@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Create an email to the studio only
     const studioEmailData = {
       from: "Contact Form <onboarding@resend.dev>", // Using Resend's test sender
-      to: ["refugiomusicstudio@gmail.com"],
+      to: ["refugiomusicmedia@gmail.com"],
       subject: `New Project Inquiry from ${name}`,
       html: `
         <h2>New Project Inquiry from ${name}</h2>

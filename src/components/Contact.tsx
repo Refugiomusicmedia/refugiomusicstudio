@@ -121,7 +121,7 @@ const Contact = () => {
             </div>
             <div className="flex items-center space-x-4">
               <Mail className="w-6 h-6 text-studio-pink" />
-              <p className="text-gray-300">refugiomusicstudio@gmail.com</p>
+              <p className="text-gray-300">refugiomusicmedia@gmail.com</p>
             </div>
             
             <div className="mt-8 p-6 bg-white/5 rounded-lg border border-white/10">
